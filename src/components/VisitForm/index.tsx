@@ -140,7 +140,7 @@ function VisitForm({ defaultValues, onSubmit, onCancel }: VisitFormProps) {
 
         <MaskedField
           label="CEP"
-          mask="99999-999"
+          mask="XXXXX-XXX"
           register={register("cep", {
             required: "Obrigatório",
             pattern: {

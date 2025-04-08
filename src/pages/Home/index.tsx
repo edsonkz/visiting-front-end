@@ -3,8 +3,6 @@ import { PageDescription } from "../../components/PageDescription";
 import { CenteredContainer } from "./styles";
 
 export const Home = () => {
-  const workdays = ["28/03/2025", "29/03/2025", "30/03/2025"];
-
   return (
     <CenteredContainer $gap="2rem">
       <PageDescription
@@ -14,9 +12,7 @@ export const Home = () => {
         }
       />
 
-      {workdays.map((workday) => (
-        <DateSection key={workday} workday={workday} />
-      ))}
+      <DateSection />
     </CenteredContainer>
   );
 };

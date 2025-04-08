@@ -1,9 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { Visit, VisitsByDate, VisitStatus } from "../types/visit";
+import { calculateVisitDuration } from "../utils/calculateVisitDuration";
 
 interface VisitsContextValue {
   visits: VisitsByDate;
-  addVisit: (visit: Visit) => { success: boolean, message: string };
+  addVisit: (visit: Visit) => { success: boolean; message: string };
   updateVisit: (visit: Visit) => void;
   changeStatus: (id: string, date: string) => void;
   closeDate: (date: string) => void;
@@ -28,16 +29,12 @@ export function VisitsProvider({ children }: { children: React.ReactNode }) {
 
   // Saving any visits changes on localStorage
   useEffect(() => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(visits));
+    if (Object.keys(visits).length) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(visits));
+    }
   }, [visits]);
 
-  const calculateVisitDuration = (visit: Visit): number => {
-    return visit.forms * 15 + visit.products * 5;
-  };
-
-  const addVisit = (
-    newVisit: Visit
-  ): { success: boolean, message: string } => {
+  const addVisit = (newVisit: Visit): { success: boolean; message: string } => {
     if (calculateVisitDuration(newVisit) > 480) {
       return {
         success: false,
