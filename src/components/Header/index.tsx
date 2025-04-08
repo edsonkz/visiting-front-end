@@ -4,10 +4,18 @@ import { Container, Title } from "./styles";
 import { Modal } from "../Modal";
 import VisitForm from "../VisitForm";
 import { useVisits } from "../../contexts/VisitsContext";
+import { Visit } from "../../types/visit";
+import { toast } from "react-toastify";
 
 const Header = () => {
-  const { visits, addVisit } = useVisits();
+  const { addVisit } = useVisits();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleVisitSubmit = (visit: Visit) => {
+    const response = addVisit(visit);
+
+    toast(response.message, { type: response.success? "success" : "error" });
+  }
 
   return (
     <>
@@ -20,9 +28,8 @@ const Header = () => {
 
       {isModalOpen && (
         <Modal onClose={() => setIsModalOpen(false)}>
-          <h4>Cadastrar Nova Visita</h4>
           <VisitForm
-            onSubmit={(visit) => addVisit(visit)}
+            onSubmit={handleVisitSubmit}
             onCancel={() => setIsModalOpen(false)}
           />
         </Modal>

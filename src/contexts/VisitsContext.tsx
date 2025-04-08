@@ -3,7 +3,7 @@ import { Visit, VisitsByDate, VisitStatus } from "../types/visit";
 
 interface VisitsContextValue {
   visits: VisitsByDate;
-  addVisit: (visit: Visit) => void;
+  addVisit: (visit: Visit) => { success: boolean, message: string };
   updateVisit: (visit: Visit) => void;
   changeStatus: (id: string, date: string) => void;
   closeDate: (date: string) => void;
@@ -31,14 +31,44 @@ export function VisitsProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(visits));
   }, [visits]);
 
-  const addVisit = (visit: Visit) => {
-    setVisits((prev) => {
-      const dateVisits = prev[visit.date] || [];
+  const calculateVisitDuration = (visit: Visit): number => {
+    return visit.forms * 15 + visit.products * 5;
+  };
+
+  const addVisit = (
+    newVisit: Visit
+  ): { success: boolean, message: string } => {
+    if (calculateVisitDuration(newVisit) > 480) {
       return {
-        ...prev,
-        [visit.date]: [...dateVisits, visit],
+        success: false,
+        message: "Esta visita excede 8 horas.",
       };
+    }
+
+    const visitsOnDate = visits[newVisit.date] || [];
+    // Check how much will be the totalHours after inserting new visit
+    const totalHours =
+      visitsOnDate.reduce(
+        (sum, visit) => sum + calculateVisitDuration(visit),
+        0
+      ) + calculateVisitDuration(newVisit);
+
+    // If total exceed 480 minutes ( 8 hours), throw error
+    if (totalHours > 480) {
+      return {
+        success: false,
+        message: "A soma das visitas excede 8 horas para essa data.",
+      };
+    }
+
+    // adiciona normalmente
+    const updated = [...visitsOnDate, newVisit];
+    setVisits({
+      ...visits,
+      [newVisit.date]: updated,
     });
+
+    return { success: true, message: "Visita cadastrado com sucesso!" };
   };
 
   const updateVisit = (updatedVisit: Visit) => {

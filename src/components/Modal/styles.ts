@@ -18,3 +18,7 @@ export const ModalContainer = styled.div`
   min-width: 400px;
   max-width: 90%;
 `;
+
+export const ModalTitle = styled.h3`
+  padding-bottom: 1rem;
+`;
