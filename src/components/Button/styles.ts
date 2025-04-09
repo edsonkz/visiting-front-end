@@ -29,9 +29,6 @@ export const StyledButton = styled.button<StyledButtonProps>`
   border-radius: 8px;
   padding: 10px 16px;
   font-size: 1rem;
-  -webkit-box-shadow: 0px 3px 8px 1px rgba(0, 0, 0, 0.2);
-  -moz-box-shadow: 0px 3px 8px 1px rgba(0, 0, 0, 0.2);
-  box-shadow: 0px 3px 8px 1px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   transition: background-color 0.3s ease;
 
