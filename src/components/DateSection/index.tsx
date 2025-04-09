@@ -7,7 +7,7 @@ export const DateSection = () => {
 
   return (
     <DateContainer>
-      {Object.keys(visits).map((key) => (
+      {Object.keys(visits).sort().map((key) => (
         <DateCard key={key} date={key} visits={visits[key]} />
       ))}
     </DateContainer>

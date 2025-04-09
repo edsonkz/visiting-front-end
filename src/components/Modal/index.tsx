@@ -4,14 +4,15 @@ import { Overlay, ModalContainer, ModalTitle } from "./styles";
 
 interface ModalProps {
   children: ReactNode;
+  title: string;
   onClose: () => void;
 }
 
-export const Modal = ({ children, onClose }: ModalProps) => {
+export const Modal = ({ children, title, onClose }: ModalProps) => {
   return ReactDOM.createPortal(
     <Overlay onClick={onClose}>
       <ModalContainer onClick={(e) => e.stopPropagation()}>
-        <ModalTitle>Cadastrar Nova Visita</ModalTitle>
+        <ModalTitle>{title}</ModalTitle>
         {children}
       </ModalContainer>
     </Overlay>,

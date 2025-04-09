@@ -16,7 +16,7 @@ interface VisitFormProps {
   onCancel: () => void;
 }
 
-function VisitForm({ defaultValues, onSubmit, onCancel }: VisitFormProps) {
+export function VisitForm({ defaultValues, onSubmit, onCancel }: VisitFormProps) {
   const {
     register,
     handleSubmit,
@@ -81,14 +81,14 @@ function VisitForm({ defaultValues, onSubmit, onCancel }: VisitFormProps) {
   }, [cep, setValue]);
 
   const onFormSubmit = (data: VisitFormData) => {
-    const { forms, products, date, ...address } = data;
+    const { id, forms, products, date, status, ...address } = data;
     const visit: Visit = {
       address,
       forms,
       products,
       date,
-      id: String(Date.now()),
-      status: "pending",
+      id: id ?? String(Date.now()),
+      status: status ?? "pending",
     };
 
     onSubmit(visit);
@@ -203,5 +203,3 @@ function VisitForm({ defaultValues, onSubmit, onCancel }: VisitFormProps) {
     </FormContainer>
   );
 }
-
-export default VisitForm;

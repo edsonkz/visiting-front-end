@@ -13,7 +13,7 @@ export const Button = ({
   children,
   onClick,
   type = "button",
-  variant = "default",
+  variant = "secondary",
   disabled,
 }: ButtonProps) => {
   return (

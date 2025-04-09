@@ -12,6 +12,8 @@ export interface Visit {
 }
 
 export interface VisitFormData {
+  id?: string;
+  status?: VisitStatus;
   date: string;
   forms: number;
   products: number;
