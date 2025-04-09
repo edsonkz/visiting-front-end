@@ -1,13 +1,15 @@
-import { StyledCard } from "./styles";
+import { useVisits } from "../../contexts/VisitsContext";
+import { DateCard } from "../DateCard";
+import { DateContainer } from "./styles";
 
-interface DateSectionProps {
-  workday: string;
-}
+export const DateSection = () => {
+  const { visits } = useVisits();
 
-export const DateSection = ({ workday }: DateSectionProps) => {
   return (
-    <StyledCard>
-      <h3>{workday}</h3>
-    </StyledCard>
+    <DateContainer>
+      {Object.keys(visits).sort().map((key) => (
+        <DateCard key={key} date={key} visits={visits[key]} />
+      ))}
+    </DateContainer>
   );
 };

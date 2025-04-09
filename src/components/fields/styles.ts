@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { InputMask } from '@react-input/mask';
+import { InputMask } from "@react-input/mask";
 
 export const FieldContainer = styled.div`
   display: flex;
@@ -11,6 +11,11 @@ export const Input = styled.input`
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 8px;
+  width: 100%;
+
+  &:focus {
+    outline: 1px solid ${({ theme }) => theme.colors.primary};
+  }
 `;
 
 // Exclusive input related to MaskedField
@@ -18,6 +23,11 @@ export const StyledMask = styled(InputMask)`
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 8px;
+  width: 100%;
+
+  &:focus {
+    outline: 1px solid ${({ theme }) => theme.colors.primary};
+  }
 `;
 
 export const Error = styled.span`

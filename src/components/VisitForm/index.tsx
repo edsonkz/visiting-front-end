@@ -7,7 +7,8 @@ import { TextField } from "../fields/TextField";
 import { NumberField } from "../fields/NumberField";
 import { MaskedField } from "../fields/MaskedField";
 import { DateField } from "../fields/DateField";
-import { FormContainer } from "./styles";
+import { ButtonDiv, FormContainer, FormRow } from "./styles";
+import { Button } from "../Button";
 
 interface VisitFormProps {
   defaultValues?: VisitFormData;
@@ -15,7 +16,7 @@ interface VisitFormProps {
   onCancel: () => void;
 }
 
-function VisitForm({ defaultValues, onSubmit, onCancel }: VisitFormProps) {
+export function VisitForm({ defaultValues, onSubmit, onCancel }: VisitFormProps) {
   const {
     register,
     handleSubmit,
@@ -34,6 +35,7 @@ function VisitForm({ defaultValues, onSubmit, onCancel }: VisitFormProps) {
 
   const cep = watch("cep");
 
+  // Update Address info when CEP is inserted
   useEffect(() => {
     const fetchAddress = async () => {
       const cleanCEP = cep?.replace(/\D/g, "");
@@ -79,20 +81,14 @@ function VisitForm({ defaultValues, onSubmit, onCancel }: VisitFormProps) {
   }, [cep, setValue]);
 
   const onFormSubmit = (data: VisitFormData) => {
-    const totalMinutes = data.forms * 15 + data.products * 5;
-    if (totalMinutes > 480) {
-      alert("A visita excede o limite de 8 horas!");
-      return;
-    }
-
-    const { forms, products, date, ...address } = data;
+    const { id, forms, products, date, status, ...address } = data;
     const visit: Visit = {
       address,
       forms,
       products,
       date,
-      id: String(Date.now()),
-      status: "pending",
+      id: id ?? String(Date.now()),
+      status: status ?? "pending",
     };
 
     onSubmit(visit);
@@ -101,98 +97,109 @@ function VisitForm({ defaultValues, onSubmit, onCancel }: VisitFormProps) {
 
   return (
     <FormContainer onSubmit={handleSubmit(onFormSubmit)}>
-      <DateField
-        label="Data da visita"
-        register={register("date", { required: "Data obrigatória" })}
-        error={errors.date?.message}
-      />
+      <FormRow>
+        <DateField
+          label="Data da visita"
+          register={register("date", { required: "Data obrigatória" })}
+          error={errors.date?.message}
+        />
 
-      <NumberField
-        label="Formulários"
-        register={register("forms", {
-          required: "Campo obrigatório",
-          valueAsNumber: true,
-          min: {
-            value: 0,
-            message: "O valor deve ser 0 ou maior",
-          },
-          validate: (value) =>
-            Number.isInteger(value) || "Apenas números inteiros são permitidos",
-        })}
-        error={errors.forms?.message}
-      />
+        <NumberField
+          label="Formulários"
+          register={register("forms", {
+            required: "Campo obrigatório",
+            valueAsNumber: true,
+            min: {
+              value: 0,
+              message: "O valor deve ser 0 ou maior",
+            },
+            validate: (value) =>
+              Number.isInteger(value) ||
+              "Apenas números inteiros são permitidos",
+          })}
+          error={errors.forms?.message}
+        />
+      </FormRow>
 
-      <NumberField
-        label="Produtos"
-        register={register("products", {
-          required: "Campo obrigatório",
-          valueAsNumber: true,
-          min: {
-            value: 0,
-            message: "O valor deve ser 0 ou maior",
-          },
-          validate: (value) =>
-            Number.isInteger(value) || "Apenas números inteiros são permitidos",
-        })}
-        error={errors.products?.message}
-      />
+      <FormRow>
+        <NumberField
+          label="Produtos"
+          register={register("products", {
+            required: "Campo obrigatório",
+            valueAsNumber: true,
+            min: {
+              value: 0,
+              message: "O valor deve ser 0 ou maior",
+            },
+            validate: (value) =>
+              Number.isInteger(value) ||
+              "Apenas números inteiros são permitidos",
+          })}
+          error={errors.products?.message}
+        />
 
-      <MaskedField
-        label="CEP"
-        mask="99999-999"
-        register={register("cep", {
-          required: "Obrigatório",
-          pattern: {
-            value: /^\d{5}-\d{3}$/,
-            message: "Formato inválido",
-          },
-        })}
-        error={errors.cep?.message}
-      />
+        <MaskedField
+          label="CEP"
+          mask="XXXXX-XXX"
+          register={register("cep", {
+            required: "Obrigatório",
+            pattern: {
+              value: /^\d{5}-\d{3}$/,
+              message: "Formato inválido",
+            },
+          })}
+          error={errors.cep?.message}
+        />
+      </FormRow>
 
-      <TextField
-        readOnly
-        label="UF"
-        register={register("uf", { required: "Obrigatório" })}
-        disabled
-      />
-      <TextField
-        readOnly
-        label="Cidade"
-        register={register("city", { required: "Obrigatório" })}
-        disabled
-      />
+      <FormRow>
+        <TextField
+          readOnly
+          label="UF"
+          register={register("uf", { required: "Obrigatório" })}
+          disabled
+        />
+        <TextField
+          readOnly
+          label="Cidade"
+          register={register("city", { required: "Obrigatório" })}
+          disabled
+        />
+      </FormRow>
 
       <TextField
         label="Bairro"
         register={register("neighborhood", { required: "Obrigatório" })}
         error={errors.neighborhood?.message}
-        disabled={!manualNeighborhood}
+        disabled={addressLoading || !manualNeighborhood}
       />
 
       <TextField
         label="Logradouro"
         register={register("street", { required: "Obrigatório" })}
         error={errors.street?.message}
-        disabled={!manualStreet}
+        disabled={addressLoading || !manualStreet}
       />
 
       <NumberField
         label="Número"
         register={register("number", { required: "Obrigatório", min: 1 })}
         error={errors.number?.message}
+        disabled={addressLoading}
       />
 
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
-        <button type="button" onClick={onCancel}>
+      <ButtonDiv>
+        <Button type="button" onClick={onCancel} variant={"danger"}>
           Fechar
-        </button>
-        <button type="submit" disabled={!isValid || isSubmitting}>
+        </Button>
+        <Button
+          type="submit"
+          disabled={!isValid || isSubmitting}
+          variant={"success"}
+        >
           Salvar
-        </button>
-      </div>
+        </Button>
+      </ButtonDiv>
     </FormContainer>
   );
 }
-
-export default VisitForm;

@@ -22,7 +22,7 @@ export const MaskedField = ({
       <StyledMask
         {...register}
         mask={mask}
-        replacement={{ 9: /\d/ }}
+        replacement={{ X: /\d/ }}
         disabled={disabled}
       />
       {error && <Error>{error}</Error>}
