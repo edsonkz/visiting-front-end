@@ -41,7 +41,9 @@ export function VisitsProvider({ children }: { children: React.ReactNode }) {
     }
   }, [visits]);
 
+  // Add new Visit function
   const addVisit = (newVisit: Visit): Response => {
+    // Validate new visit duration
     if (calculateVisitDuration(newVisit) > 480) {
       return {
         success: false,
@@ -49,6 +51,7 @@ export function VisitsProvider({ children }: { children: React.ReactNode }) {
       };
     }
 
+    // Get visits from the selected date. If date don't exists, returns a empty array
     const visitsOnDate = visits[newVisit.date] || [];
     // Check how much will be the totalHours after inserting new visit
     const totalHours =
@@ -72,27 +75,34 @@ export function VisitsProvider({ children }: { children: React.ReactNode }) {
     return { success: true, message: "Visita cadastrado com sucesso!" };
   };
 
+  // Update Visit function
   const updateVisit = (updatedVisit: Visit): Response => {
     const { date: newDate, id } = updatedVisit;
 
     const currentVisits = visits;
 
+    // Find the current date from this visit
     const oldDate = Object.keys(currentVisits).find((date) =>
       currentVisits[date].some((v) => v.id === id)
     );
 
+    // If not finded, the visit doesn't exist and throws error
     if (!oldDate) {
       return { success: false, message: "Visita não encontrada." };
     }
 
+    // Get the others visits from that date
     const oldVisitList = currentVisits[oldDate].filter((v) => v.id !== id);
+    // Get the new visit list that the updated visit will enter if the date was changed
     const newVisitList =
       newDate === oldDate ? oldVisitList : currentVisits[newDate] || [];
 
+      // Get the current total minutes of the new date list of visits that the updated visit will enter
     const totalMinutes = calculateTotalMinutes(newVisitList);
-
+    // Get the updated visit total duration
     const updatedMinutes = calculateVisitDuration(updatedVisit);
 
+    // Check if updated visit will not exceed the minutes limit
     if (totalMinutes + updatedMinutes > 480) {
       return {
         success: false,
@@ -100,12 +110,14 @@ export function VisitsProvider({ children }: { children: React.ReactNode }) {
       };
     }
 
+    // Update list of all dates with the new visits disposition
     const updatedVisits = {
       ...currentVisits,
       [oldDate]: oldVisitList,
       [newDate]: [...newVisitList, updatedVisit],
     };
 
+    // Delete old date if is empty
     if (updatedVisits[oldDate].length === 0) {
       delete updatedVisits[oldDate];
     }
@@ -117,6 +129,7 @@ export function VisitsProvider({ children }: { children: React.ReactNode }) {
 
   const changeStatus = (id: string, date: string) => {
     setVisits((prev) => {
+      // Find and update the visit with same id
       const updated = (prev[date] || []).map((visit) =>
         visit.id === id
           ? {
@@ -134,8 +147,10 @@ export function VisitsProvider({ children }: { children: React.ReactNode }) {
   const closeDate = (
     dateToClose: string
   ): { success: boolean; message: string } => {
+    // Creates a copy of the visits
     const currentVisits = { ...visits };
 
+    // Get visits of the day that will be closed and return error if date not found
     const visitsOfDay = currentVisits[dateToClose];
     if (!visitsOfDay) {
       return { success: false, message: "Data não encontrada." };
@@ -144,6 +159,7 @@ export function VisitsProvider({ children }: { children: React.ReactNode }) {
     //Get pending visits of the received date
     const pendingVisits = visitsOfDay.filter((v) => v.status !== "done");
 
+    // Return error if all visits of that date are already done
     if (pendingVisits.length === 0) {
       return {
         success: false,
@@ -157,6 +173,10 @@ export function VisitsProvider({ children }: { children: React.ReactNode }) {
     // Sort pending visits from oldest to newest based on ID
     pendingVisits.sort((a, b) => Number(a.id) - Number(b.id));
 
+    /* 
+      The oldest pending visit will be always before the youngest visit,
+      so because of that, the current Date needs to be set before the for
+    */
     let currentDate = getNextDate(dateToClose);
     for (const visit of pendingVisits) {
       const duration = calculateVisitDuration(visit);
