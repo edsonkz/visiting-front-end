@@ -2,13 +2,19 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { Visit, VisitsByDate, VisitStatus } from "../types/visit";
 import { calculateVisitDuration } from "../utils/calculateVisitDuration";
 import { calculateTotalMinutes } from "../utils/calculateTotalMinutes";
+import { getNextDate } from "../utils/getNextDate";
+
+type Response = {
+  success: boolean;
+  message: string;
+};
 
 interface VisitsContextValue {
   visits: VisitsByDate;
-  addVisit: (visit: Visit) => { success: boolean; message: string };
-  updateVisit: (visit: Visit) => { success: boolean; message: string };
+  addVisit: (visit: Visit) => Response;
+  updateVisit: (visit: Visit) => Response;
   changeStatus: (id: string, date: string) => void;
-  closeDate: (date: string) => void;
+  closeDate: (date: string) => Response;
 }
 
 const VisitsContext = createContext({} as VisitsContextValue);
@@ -35,7 +41,7 @@ export function VisitsProvider({ children }: { children: React.ReactNode }) {
     }
   }, [visits]);
 
-  const addVisit = (newVisit: Visit): { success: boolean; message: string } => {
+  const addVisit = (newVisit: Visit): Response => {
     if (calculateVisitDuration(newVisit) > 480) {
       return {
         success: false,
@@ -45,7 +51,8 @@ export function VisitsProvider({ children }: { children: React.ReactNode }) {
 
     const visitsOnDate = visits[newVisit.date] || [];
     // Check how much will be the totalHours after inserting new visit
-    const totalHours = calculateTotalMinutes(visitsOnDate) + calculateVisitDuration(newVisit);
+    const totalHours =
+      calculateTotalMinutes(visitsOnDate) + calculateVisitDuration(newVisit);
 
     // If total exceed 480 minutes ( 8 hours), throw error
     if (totalHours > 480) {
@@ -65,9 +72,7 @@ export function VisitsProvider({ children }: { children: React.ReactNode }) {
     return { success: true, message: "Visita cadastrado com sucesso!" };
   };
 
-  const updateVisit = (
-    updatedVisit: Visit
-  ): { success: boolean; message: string } => {
+  const updateVisit = (updatedVisit: Visit): Response => {
     const { date: newDate, id } = updatedVisit;
 
     const currentVisits = visits;
@@ -126,9 +131,61 @@ export function VisitsProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  const closeDate = (date: string) => {
-    // lógica de realocar visitas pendentes para o próximo dia
-    // podemos implementar depois em conjunto
+  const closeDate = (
+    dateToClose: string
+  ): { success: boolean; message: string } => {
+    const currentVisits = { ...visits };
+
+    const visitsOfDay = currentVisits[dateToClose];
+    if (!visitsOfDay) {
+      return { success: false, message: "Data não encontrada." };
+    }
+
+    //Get pending visits of the received date
+    const pendingVisits = visitsOfDay.filter((v) => v.status !== "done");
+
+    if (pendingVisits.length === 0) {
+      return {
+        success: false,
+        message: "Todas as visitas já estão concluídas.",
+      };
+    }
+
+    // Remove pending visits from the original date
+    currentVisits[dateToClose] = visitsOfDay.filter((v) => v.status === "done");
+
+    // Sort pending visits from oldest to newest based on ID
+    pendingVisits.sort((a, b) => Number(a.id) - Number(b.id));
+
+    let currentDate = getNextDate(dateToClose);
+    for (const visit of pendingVisits) {
+      const duration = calculateVisitDuration(visit);
+
+      // Try placing the visit in the earliest future date with available time
+      while (true) {
+        const list = currentVisits[currentDate] || [];
+        const total = calculateTotalMinutes(list);
+
+        // If total duration is lesser than 480 minutes (8 h), insert into the new date
+        if (total + duration <= 480) {
+          const updatedVisit = { ...visit, date: currentDate };
+          currentVisits[currentDate] = [...list, updatedVisit];
+          break;
+        }
+
+        // Next Date
+        currentDate = getNextDate(currentDate);
+      }
+    }
+
+    // Remove old date if empty
+    if (currentVisits[dateToClose].length === 0) {
+      delete currentVisits[dateToClose];
+    }
+
+    setVisits(currentVisits);
+
+    return { success: true, message: "Visitas remanejadas com sucesso." };
   };
 
   return (

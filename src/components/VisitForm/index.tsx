@@ -189,13 +189,13 @@ export function VisitForm({ defaultValues, onSubmit, onCancel }: VisitFormProps)
       />
 
       <ButtonDiv>
-        <Button type="button" onClick={onCancel} variant={"danger"}>
+        <Button type="button" onClick={onCancel} $variant={"danger"}>
           Fechar
         </Button>
         <Button
           type="submit"
           disabled={!isValid || isSubmitting}
-          variant={"success"}
+          $variant={"success"}
         >
           Salvar
         </Button>

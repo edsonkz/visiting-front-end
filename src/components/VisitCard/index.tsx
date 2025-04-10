@@ -2,11 +2,12 @@ import { useState } from "react";
 import { Visit } from "../../types/visit";
 import { calculateVisitDuration } from "../../utils/calculateVisitDuration";
 import { Button } from "../Button";
-import { RowDiv, StyledCard, StyledVisitCard } from "../DateCard/styles";
+import { RowDiv, StyledVisitCard } from "../DateCard/styles";
 import { Modal } from "../Modal";
 import { VisitForm } from "../VisitForm";
 import { useVisits } from "../../contexts/VisitsContext";
 import { toast } from "react-toastify";
+import { Tag } from "./styles";
 
 interface VisitCardProps {
   visit: Visit;
@@ -25,23 +26,27 @@ export const VisitCard = ({ visit }: VisitCardProps) => {
 
   return (
     <StyledVisitCard>
-      <h4>Nº {visit.id}</h4>
-      <div>Formulários: {visit.forms}</div>
-      <div>Produtos: {visit.products}</div>
-      <div>Duração Estimada: {calculateVisitDuration(visit)} minutos</div>
-
-      <h5>Endereço:</h5>
+      <Tag>Nº {visit.id}</Tag>
       <div>
-        {address.street}, {address.number} - {address.cep}
-      </div>
-      <div>
-        {address.neighborhood}, {address.city} - {address.uf}
+        <div>Formulários: {visit.forms}</div>
+        <div>Produtos: {visit.products}</div>
+        <div>Duração Estimada: {calculateVisitDuration(visit)} minutos</div>
       </div>
 
-      <RowDiv>
+      <div>
+        <h4>Endereço</h4>
+        <div>
+          {address.street}, {address.number} - {address.cep}
+        </div>
+        <div>
+          {address.neighborhood}, {address.city} - {address.uf}
+        </div>
+      </div>
+
+      <RowDiv $marginbottom="0">
         <Button onClick={() => setIsModalOpen(true)}>Editar</Button>
         <Button
-          variant={visit.status === "done" ? "danger" : "success"}
+          $variant={visit.status === "done" ? "danger" : "success"}
           onClick={() => changeStatus(visit.id, visit.date)}
         >
           {visit.status === "done" ? "Desfazer Visita" : "Completar Visita"}

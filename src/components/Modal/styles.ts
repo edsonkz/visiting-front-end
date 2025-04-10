@@ -1,5 +1,25 @@
 // src/components/Modal/styles.ts
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+
+const show = keyframes`
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+`;
+
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
 
 export const Overlay = styled.div`
   position: fixed;
@@ -9,6 +29,7 @@ export const Overlay = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 999;
+  animation: ${fadeIn} 0.2s ease-out;
 `;
 
 export const ModalContainer = styled.div`
@@ -17,6 +38,7 @@ export const ModalContainer = styled.div`
   border-radius: 8px;
   min-width: 400px;
   max-width: 90%;
+  animation: ${show} 0.2s ease-out;
 `;
 
 export const ModalTitle = styled.h3`

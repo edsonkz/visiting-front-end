@@ -8,7 +8,7 @@ export const Home = () => {
       <PageDescription
         title={"Seja bem vindo ao portal de Gerenciamento de Visitas"}
         subtitle={
-          "Aqui você pode gerenciar visitas definindo endereços e datas específicas"
+          "Gerencie suas visitas de forma prática e eficiente: cadastre, edite e reagende compromissos com controle de tempo, agrupamento por data e integração com a API ViaCEP."
         }
       />
 

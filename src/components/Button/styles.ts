@@ -3,12 +3,12 @@ import styled, { DefaultTheme } from "styled-components";
 export type Variant = "secondary" | "success" | "danger" | "blue";
 
 type StyledButtonProps = {
-  variant?: Variant;
+  $variant?: Variant;
 };
 
 const getVariantColor = (
   theme: DefaultTheme,
-  variant: Variant = "secondary",
+  $variant: Variant = "secondary",
   isDark?: boolean
 ) => {
   const colorMap = {
@@ -18,31 +18,28 @@ const getVariantColor = (
     blue: theme.colors.blue,
   };
 
-  return colorMap[variant];
+  return colorMap[$variant];
 };
 
 export const StyledButton = styled.button<StyledButtonProps>`
-  background-color: ${({ theme, variant }) => getVariantColor(theme, variant)};
+  background-color: ${({ theme, $variant }) => getVariantColor(theme, $variant)};
   color: white;
   border: none;
   font-weight: bold;
   border-radius: 8px;
   padding: 10px 16px;
   font-size: 1rem;
-  -webkit-box-shadow: 0px 3px 8px 1px rgba(0, 0, 0, 0.2);
-  -moz-box-shadow: 0px 3px 8px 1px rgba(0, 0, 0, 0.2);
-  box-shadow: 0px 3px 8px 1px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   transition: background-color 0.3s ease;
 
   &:hover:not(:disabled) {
-    background-color: ${({ theme, variant }) =>
-      getVariantColor(theme, variant, true)};
+    background-color: ${({ theme, $variant }) =>
+      getVariantColor(theme, $variant, true)};
   }
 
   &:disabled {
-    background-color: ${({ theme, variant }) =>
-      getVariantColor(theme, variant, true)};
+    background-color: ${({ theme, $variant }) =>
+      getVariantColor(theme, $variant, true)};
     cursor: not-allowed;
     opacity: 0.5;
   }

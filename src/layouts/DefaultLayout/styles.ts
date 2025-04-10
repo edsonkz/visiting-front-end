@@ -8,6 +8,9 @@ export const Container = styled.div`
 
 export const Content = styled.main`
   flex: 1;
-  padding: 24px;
+  padding: 1.5rem;
   background-color: #f5f5f5;
+  align-self: center;
+  width: 100%;
+  max-width: 1100px;
 `;

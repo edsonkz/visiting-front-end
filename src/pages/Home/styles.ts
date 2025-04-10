@@ -4,7 +4,7 @@ interface CenteredContainerProps {
   $gap?: string;
 }
 
-export const CenteredContainer = styled.header<CenteredContainerProps>`
+export const CenteredContainer = styled.div<CenteredContainerProps>`
   width: 100%;
   padding: 16px 24px;
   display: flex;
