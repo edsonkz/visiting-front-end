@@ -17,33 +17,37 @@ export const DateCard = ({ date, visits }: DateCardProps) => {
   const { closeDate } = useVisits();
   const totalDuration = calculateTotalMinutes(visits);
   const durationPercentage = (totalDuration * 100) / 480;
+  let orderedVisits = [...visits ].sort((a, b) => Number(a.id) - Number(b.id));
 
-  const totalCompleted = calculateTotalMinutes(visits.filter(
-    (visit) => visit.status === "done"
-  ));
+  const totalCompleted = calculateTotalMinutes(
+    visits.filter((visit) => visit.status === "done")
+  );
   const completedPercentage = (totalCompleted * 100) / totalDuration;
 
   const handleCloseDate = () => {
     const response = closeDate(date);
 
     toast(response.message, { type: response.success ? "success" : "error" });
-  }
+  };
 
   return (
     <StyledCard>
-      <RowDiv hasbackground>
+      <RowDiv $hasbackground>
         <h2>{formatDateToDisplay(date)}</h2>
         <InfoDiv>
-          <h4>{durationPercentage.toFixed(2)}% de horas consumidas</h4>
+          <h4>
+            {durationPercentage.toFixed(2)}% de horas consumidas (resta{" "}
+            {480 - totalDuration} minutos)
+          </h4>
           <PercentageColor percentage={completedPercentage} />
         </InfoDiv>
       </RowDiv>
       <Grid>
-        {visits.map((visit) => (
+        {orderedVisits.map((visit) => (
           <VisitCard key={visit.id} visit={visit} />
         ))}
       </Grid>
-      <Button variant="danger" onClick={handleCloseDate}>
+      <Button $variant="danger" onClick={handleCloseDate}>
         Fechar Dia
       </Button>
     </StyledCard>

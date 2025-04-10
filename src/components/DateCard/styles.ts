@@ -5,8 +5,8 @@ interface StyledCardProps {
 }
 
 interface RowDivProps {
-  hasbackground?: boolean;
-  marginbottom?: string;
+  $hasbackground?: boolean;
+  $marginbottom?: string;
 }
 
 export const StyledCard = styled.div<StyledCardProps>`
@@ -46,10 +46,10 @@ export const RowDiv = styled.div<RowDivProps>`
   gap: 1rem;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: ${({ marginbottom }) =>
-    marginbottom ? marginbottom : "1rem"};
-  ${({ theme, hasbackground }) =>
-    hasbackground &&
+  margin-bottom: ${({ $marginbottom }) =>
+    $marginbottom ? $marginbottom : "1rem"};
+  ${({ theme, $hasbackground }) =>
+    $hasbackground &&
     `
     background-color: ${theme.colors.secondaryDark};
     color: ${theme.colors.white};
@@ -57,7 +57,7 @@ export const RowDiv = styled.div<RowDivProps>`
   `}
 
   ${(props) =>
-    !props.hasbackground &&
+    !props.$hasbackground &&
     `
     background-color: transparent;
     color: black;

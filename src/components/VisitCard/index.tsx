@@ -43,10 +43,10 @@ export const VisitCard = ({ visit }: VisitCardProps) => {
         </div>
       </div>
 
-      <RowDiv marginbottom="0">
+      <RowDiv $marginbottom="0">
         <Button onClick={() => setIsModalOpen(true)}>Editar</Button>
         <Button
-          variant={visit.status === "done" ? "danger" : "success"}
+          $variant={visit.status === "done" ? "danger" : "success"}
           onClick={() => changeStatus(visit.id, visit.date)}
         >
           {visit.status === "done" ? "Desfazer Visita" : "Completar Visita"}

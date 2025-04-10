@@ -72,9 +72,7 @@ export function VisitsProvider({ children }: { children: React.ReactNode }) {
     return { success: true, message: "Visita cadastrado com sucesso!" };
   };
 
-  const updateVisit = (
-    updatedVisit: Visit
-  ): Response => {
+  const updateVisit = (updatedVisit: Visit): Response => {
     const { date: newDate, id } = updatedVisit;
 
     const currentVisits = visits;
@@ -159,35 +157,24 @@ export function VisitsProvider({ children }: { children: React.ReactNode }) {
     // Sort pending visits from oldest to newest based on ID
     pendingVisits.sort((a, b) => Number(a.id) - Number(b.id));
 
-    // Get future dates (chronologically sorted)
-    const futureDates = Object.keys(currentVisits)
-      .filter((d) => d > dateToClose)
-      .sort();
-
+    let currentDate = getNextDate(dateToClose);
     for (const visit of pendingVisits) {
       const duration = calculateVisitDuration(visit);
-      let moved = false;
 
       // Try placing the visit in the earliest future date with available time
-      for (const date of futureDates) {
-        const list = currentVisits[date] || [];
+      while (true) {
+        const list = currentVisits[currentDate] || [];
         const total = calculateTotalMinutes(list);
 
+        // If total duration is lesser than 480 minutes (8 h), insert into the new date
         if (total + duration <= 480) {
-
-          currentVisits[date] = [...list, visit];
-          moved = true;
+          const updatedVisit = { ...visit, date: currentDate };
+          currentVisits[currentDate] = [...list, updatedVisit];
           break;
         }
-      }
 
-      if (!moved) {
-        // Create new date if not a futureDate not finded (incremental)
-        const targetDate = getNextDate(futureDates[futureDates.length - 1] ?? dateToClose);
-        const list = currentVisits[targetDate] || [];
-
-        const updatedVisit = { ...visit, date: targetDate }; // update the internal date
-        currentVisits[targetDate] = [...list, updatedVisit];
+        // Next Date
+        currentDate = getNextDate(currentDate);
       }
     }
 

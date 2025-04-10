@@ -5,7 +5,7 @@ interface PercentageColorProps {
 }
 
 export const PercentageColor = ({ percentage }: PercentageColorProps) => {
-  const variant = getColorByPercentage(percentage);
+  const $variant = getColorByPercentage(percentage);
 
   function getColorByPercentage(
     percentage: number
@@ -16,7 +16,7 @@ export const PercentageColor = ({ percentage }: PercentageColorProps) => {
   }
 
   return (
-    <StyledPercentage variant={variant}>
+    <StyledPercentage $variant={$variant}>
       <h4>{percentage.toFixed(2)}% de visitas completadas</h4>
     </StyledPercentage>
   );

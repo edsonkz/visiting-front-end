@@ -5,7 +5,7 @@ interface ButtonProps {
   children: ReactNode;
   onClick?: () => void;
   type?: "button" | "submit" | "reset";
-  variant?: Variant;
+  $variant?: Variant;
   disabled?: boolean;
 }
 
@@ -13,7 +13,7 @@ export const Button = ({
   children,
   onClick,
   type = "button",
-  variant = "secondary",
+  $variant = "secondary",
   disabled,
 }: ButtonProps) => {
   return (
@@ -21,7 +21,7 @@ export const Button = ({
       onClick={onClick}
       type={type}
       disabled={disabled}
-      variant={variant}
+      $variant={$variant}
     >
       {children}
     </StyledButton>
